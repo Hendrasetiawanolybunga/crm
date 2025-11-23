@@ -1,0 +1,18 @@
+{% extends 'core/_base.html' %}
+{% load currency %}
+{% block content %}
+<h2 class="text-success">Pembayaran - Upload Bukti</h2>
+<div class="card mb-3">
+    <div class="card-body">
+        <p>Order ID: #{{ order.id }}</p>
+        <p>Total: {{ order.total|currency }}</p>
+        <p>Silakan transfer ke rekening berikut: <strong>123-456-789 (Bank Contoh)</strong></p>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-3"><label class="form-label">Upload Bukti Transfer</label><input type="file" name="bukti"
+                    class="form-control" required></div>
+            <button class="btn btn-success" type="submit">Upload & Submit</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

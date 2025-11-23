@@ -1,0 +1,43 @@
+{% extends 'core/_base.html' %}
+{% load currency %}
+{% block content %}
+<h2 class="text-success">Riwayat Pesanan</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Tanggal</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for o in orders %}
+        <tr>
+            <td>#{{ o.id }}</td>
+            <td>{{ o.tanggal|date:"d M Y H:i" }}</td>
+            <td>{{ o.total|currency }}</td>
+            <td>
+                {% if o.status_transaksi == 'SELESAI' %}
+                <span class="badge bg-success">Selesai</span>
+                {% elif o.status_transaksi == 'DIBAYAR' %}
+                <span class="badge bg-primary">Dibayar</span>
+                {% elif o.status_transaksi == 'DIKIRIM' %}
+                <span class="badge bg-info">Dikirim</span>
+                {% elif o.status_transaksi == 'DIBATALKAN' %}
+                <span class="badge bg-danger">Dibatalkan</span>
+                {% else %}
+                <span class="badge bg-secondary">{{ o.status_transaksi }}</span>
+                {% endif %}
+            </td>
+            <td><a href="{% url 'core:order_detail' o.id %}" class="btn btn-sm btn-outline-success">Detail</a></td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5">Belum ada pesanan.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

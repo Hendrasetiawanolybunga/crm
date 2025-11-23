@@ -1,0 +1,64 @@
+{% extends 'core/_base.html' %}
+{% block content %}
+<h2 class="text-success">Checkout - Alamat & Pembayaran (Satu Halaman)</h2>
+{% load currency %}
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% if checkout_deadline %}
+    <div class="mb-3">
+        <div class="alert alert-warning">Selesaikan pembayaran dalam waktu: <strong id="checkout-countdown"
+                data-deadline="{{ checkout_deadline|date:'c' }}"></strong></div>
+    </div>
+    {% endif %}
+    <div class="mb-3">
+        <label class="form-label">Alamat Pengiriman</label>
+        <textarea class="form-control" name="alamat_pengiriman" required></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Informasi Pembayaran</label>
+        <div class="card p-3">
+            <p>Transfer ke rekening: <strong>Bank Contoh - 1234567890 (a.n. UD. Barokah Jaya Beton)</strong></p>
+            <p>Harap lakukan transfer dan unggah bukti pembayaran di bawah.</p>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Unggah Bukti Pembayaran</label>
+        <input type="file" name="bukti_bayar" class="form-control" accept="image/*,application/pdf" required>
+    </div>
+
+    <h5>Ringkasan Pesanan</h5>
+    <ul class="list-group mb-3">
+        {% for it in items %}
+        <li class="list-group-item d-flex justify-content-between">{{ it.product.nama_produk }} x{{ it.qty }} <span>{{ it.total|currency }}</span></li>
+        {% endfor %}
+        <li class="list-group-item d-flex justify-content-between fw-bold">Total <span>{{ subtotal|currency }}</span>
+        </li>
+    </ul>
+    <button class="btn btn-success" type="submit">Buat Pesanan dan Unggah Bukti</button>
+</form>
+{% if checkout_deadline %}
+<script>
+    function startCountdownEl(selector) {
+        const el = document.querySelector(selector);
+        if (!el) return;
+        const deadline = new Date(el.getAttribute('data-deadline'));
+        function update() {
+            const now = new Date();
+            let diff = Math.max(0, deadline - now);
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            diff -= hours * (1000 * 60 * 60);
+            const minutes = Math.floor(diff / (1000 * 60));
+            diff -= minutes * (1000 * 60);
+            const seconds = Math.floor(diff / 1000);
+            el.textContent = hours + 'h ' + minutes + 'm ' + seconds + 's';
+            if (deadline - now <= 0) clearInterval(tid);
+        }
+        update();
+        const tid = setInterval(update, 1000);
+    }
+    startCountdownEl('#checkout-countdown');
+</script>
+{% endif %}
+{% endblock %}

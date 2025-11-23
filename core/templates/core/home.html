@@ -1,0 +1,68 @@
+{% extends 'core/_base.html' %}
+{% block content %}
+<div class="hero mb-4">
+    <div class="container">
+        <div class="overlay">
+            <div class="row align-items-center">
+                <div class="col-md-7">
+                    <h1 class="display-4 fw-bold">Barokah Beton</h1>
+                    <p class="lead">Solusi beton berkualitas untuk proyek Anda — cepat, andal, dan siap untuk proyek
+                        besar atau kecil.</p>
+                    <a href="{% url 'core:products' %}" class="btn btn-lg btn-success me-2"><i
+                            class="fa fa-shopping-cart"></i> Lihat Produk</a>
+                    <a href="#about" class="btn btn-outline-light btn-lg">Tentang Kami</a>
+                </div>
+                <div class="col-md-5 d-none d-md-block text-end">
+                    <img src="https://via.placeholder.com/520x320.png?text=Beton+Solusi" alt="Barokah Beton"
+                        class="img-fluid rounded shadow">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section id="about" class="mb-4">
+    <div class="card">
+        <div class="card-body">
+            <h3 class="text-success">Tentang Kami</h3>
+            <p>UD. Barokah Jaya Beton adalah penyedia beton berkualitas di kawasan Makassar dengan pengalaman puluhan
+                tahun.</p>
+        </div>
+    </div>
+</section>
+
+<section id="alamat" class="mb-4">
+    <div class="card">
+        <div class="card-body">
+            <h3 class="text-success">Alamat</h3>
+            <p>Jl. Contoh No.123, Makassar</p>
+            <div class="bg-light p-5 text-center">[Peta Placeholder]</div>
+        </div>
+    </div>
+</section>
+
+<section id="faq" class="mb-4">
+    <div class="card">
+        <div class="card-body">
+            <h3 class="text-success">FAQ</h3>
+            <div class="accordion" id="faqAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="q1"><button class="accordion-button" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#c1">Bagaimana cara memesan?</button></h2>
+                    <div id="c1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">Pilih produk, tambah ke keranjang, checkout.</div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="q2"><button class="accordion-button collapsed" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#c2">Metode pembayaran?</button></h2>
+                    <div id="c2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">Transfer bank dan verifikasi manual.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

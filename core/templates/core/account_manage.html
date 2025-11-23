@@ -1,0 +1,31 @@
+{% extends 'core/_base.html' %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="text-success">Kelola Akun</h3>
+                {% if message %}<div class="alert alert-success">{{ message }}</div>{% endif %}
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3"><label class="form-label">Nama</label><input class="form-control"
+                            name="nama_pelanggan" value="{{ pelanggan.nama_pelanggan }}"></div>
+                    <div class="mb-3"><label class="form-label">Alamat</label><textarea class="form-control"
+                            name="alamat">{{ pelanggan.alamat }}</textarea></div>
+                    <div class="mb-3 row">
+                        <div class="col-md-6"><label class="form-label">Tanggal Lahir</label><input class="form-control"
+                                type="date" name="tanggal_lahir" value="{{ pelanggan.tanggal_lahir }}"></div>
+                        <div class="col-md-6"><label class="form-label">No HP</label><input class="form-control"
+                                name="no_hp" value="{{ pelanggan.no_hp }}"></div>
+                    </div>
+                    <div class="mb-3"><label class="form-label">Email</label><input class="form-control" name="email"
+                            value="{{ pelanggan.email }}"></div>
+                    <div class="mb-3"><label class="form-label">Password (kosongkan jika tidak ganti)</label><input
+                            class="form-control" type="password" name="password"></div>
+                    <button class="btn btn-success" type="submit">Simpan</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

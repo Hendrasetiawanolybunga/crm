@@ -1,0 +1,87 @@
+{% extends 'core/_base.html' %}
+{% load currency %}
+{% block content %}
+<h2 class="text-success">Keranjang</h2>
+{% if items %}
+<form method="post" action="{% url 'core:cart_update' %}">
+    {% csrf_token %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Produk</th>
+                <th>Qty</th>
+                <th>Subtotal</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for it in items %}
+            <tr data-price="{{ it.product.harga_produk }}" data-product-id="{{ it.product.id }}">
+                <td>{{ it.product.nama_produk }}</td>
+                <td><input type="number" min="1" class="form-control qty-input" name="qty_{{ it.product.id }}"
+                        value="{{ it.qty }}" style="width:100px;"></td>
+                <td class="row-subtotal">{{ it.total|currency }}</td>
+                <td><a href="{% url 'core:cart_remove' it.product.id %}"
+                        class="btn btn-sm btn-outline-danger">Remove</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <button class="btn btn-secondary" type="submit">Perbarui Keranjang</button>
+        </div>
+        <div class="text-end">
+            <p>Subtotal: <strong id="subtotal">{{ subtotal|currency }}</strong></p>
+            <p class="h5">Total: <strong id="grand_total">{{ grand_total|currency }}</strong></p>
+            <a href="{% url 'core:checkout' %}" class="btn btn-success">Checkout</a>
+        </div>
+    </div>
+</form>
+{% else %}
+<div class="alert alert-info">Keranjang Anda kosong.</div>
+{% endif %}
+{% if items %}
+<script>
+    // Live update cart subtotals and totals when qty inputs change
+    function formatCurrency(num) {
+        // simple formatter: convert number to Rp with thousands and two decimals
+        try {
+            const n = Number(num);
+            return 'Rp' + n.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        } catch (e) {
+            return num;
+        }
+    }
+
+    function recalcCart() {
+        const rows = document.querySelectorAll('tr[data-price]');
+        let subtotal = 0;
+        rows.forEach(r => {
+            const price = parseFloat(r.getAttribute('data-price')) || 0;
+            const input = r.querySelector('.qty-input');
+            const qty = parseInt(input.value) || 0;
+            const rowTotal = price * qty;
+            const cell = r.querySelector('.row-subtotal');
+            if (cell) cell.textContent = formatCurrency(rowTotal);
+            subtotal += rowTotal;
+        });
+        const subtotalEl = document.getElementById('subtotal');
+        const grandEl = document.getElementById('grand_total');
+        if (subtotalEl) subtotalEl.textContent = formatCurrency(subtotal);
+        if (grandEl) grandEl.textContent = formatCurrency(subtotal);
+    }
+
+    document.querySelectorAll('.qty-input').forEach(i => {
+        i.addEventListener('input', () => {
+            // keep minimum 1
+            if (i.value === '' || parseInt(i.value) < 1) i.value = 1;
+            recalcCart();
+        });
+    });
+
+    // initial calc
+    recalcCart();
+</script>
+{% endif %}
+{% endblock %}

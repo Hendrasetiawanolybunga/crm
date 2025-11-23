@@ -1,0 +1,57 @@
+{% extends 'core/_base.html' %}
+{% load currency %}
+{% block content %}
+<h2 class="text-success">Detail Pesanan #{{ order.id }}</h2>
+<div class="card mb-3">
+    <div class="card-body">
+        <p><strong>Tanggal:</strong> {{ order.tanggal|date:"d M Y H:i" }}</p>
+        <p><strong>Total:</strong> {{ order.total|currency }}</p>
+        <p><strong>Status:</strong> {{ order.status_transaksi }}</p>
+        <p><strong>Alamat:</strong> {{ order.alamat_pengiriman }}</p>
+        {# Batas waktu pembayaran shown only on checkout page before order is created #}
+    </div>
+</div>
+
+<h4>Items</h4>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Produk</th>
+            <th>Qty</th>
+            <th>Sub Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for it in items %}
+        <tr>
+            <td>{{ it.idProduk.nama_produk }}</td>
+            <td>{{ it.jumlah_produk }}</td>
+            <td>{{ it.sub_total|currency }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% if can_feedback %}
+<div class="card mt-4">
+    <div class="card-body">
+        <h5 class="text-success">Berikan Feedback</h5>
+        <form method="post" enctype="multipart/form-data" action="{% url 'core:submit_feedback' order.id %}">
+            {% csrf_token %}
+            <div class="mb-3"><label class="form-label">Feedback</label><textarea name="feedback" class="form-control"
+                    rows="4" required></textarea></div>
+            <div class="mb-3"><label class="form-label">Foto (opsional)</label><input type="file" name="fotofeedback"
+                    class="form-control"></div>
+            <button class="btn btn-success" type="submit">Kirim Feedback</button>
+        </form>
+    </div>
+</div>
+{% else %}
+{% if order.feedback %}
+<div class="alert alert-info">Anda sudah memberikan feedback. Terima kasih.</div>
+{% endif %}
+{% endif %}
+
+{# No countdown here - countdown is shown on pre-order checkout page only #}
+
+{% endblock %}
