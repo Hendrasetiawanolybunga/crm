@@ -1,0 +1,283 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{{ site_title|default:_('Barokah Admin') }}{% endblock %}
+
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('Barokah Administration') }}</a></h1>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
+
+{% block content %}
+<style>
+    /* Improved styling for dashboard cards */
+    .small-box {
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        height: 120px;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .small-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    }
+    
+    .small-box .inner {
+        padding: 15px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    
+    .small-box h3 {
+        font-size: 22px !important;
+        font-weight: 600 !important;
+        margin: 0 0 5px 0 !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .small-box p {
+        font-size: 14px !important;
+        margin: 0 !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .small-box .icon {
+        top: 15px;
+        right: 15px;
+        font-size: 40px;
+        opacity: 0.2;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 1200px) {
+        .small-box h3 {
+            font-size: 20px !important;
+        }
+        
+        .small-box p {
+            font-size: 13px !important;
+        }
+    }
+    
+    @media (max-width: 992px) {
+        .small-box {
+            height: 110px;
+        }
+        
+        .small-box h3 {
+            font-size: 18px !important;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .small-box {
+            height: 100px;
+        }
+        
+        .small-box h3 {
+            font-size: 16px !important;
+        }
+        
+        .small-box p {
+            font-size: 12px !important;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .small-box {
+            height: 90px;
+        }
+        
+        .small-box h3 {
+            font-size: 12px !important;
+        }
+        
+        .small-box p {
+            font-size: 10px !important;
+        }
+    }
+    
+    /* Special handling for long Rupiah values */
+    .small-box h3.truncate {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 90%;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12">
+            <p>Selamat datang di dashboard admin Barokah Beton</p>
+        </div>
+    </div>
+    
+    <!-- Stats Cards -->
+    <div class="row">
+        <div class="col-lg-3 col-md-6 col-sm-6 col-6">
+            <div class="small-box bg-info">
+                <div class="inner">
+                    <h3>{{ total_customers }}</h3>
+                    <p>Total Pelanggan</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-users"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-6 col-6">
+            <div class="small-box bg-success">
+                <div class="inner">
+                    <h3>{{ total_products }}</h3>
+                    <p>Total Produk</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-box-open"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-6 col-6">
+            <div class="small-box bg-warning">
+                <div class="inner">
+                    <h3>{{ total_successful_transactions }}</h3>
+                    <p>Total Transaksi Sukses</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-shopping-cart"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 col-sm-6 col-6">
+            <div class="small-box bg-danger">
+                <div class="inner">
+                    <h3 class="truncate">{{ total_revenue }}</h3>
+                    <p>Total Pendapatan</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-money-bill-wave"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /.row -->
+    
+    <!-- Chart Row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Tren Pendapatan Bulanan</h3>
+                </div>
+                <div class="card-body">
+                    <div id="revenueChart" style="height: 400px;"></div>
+                    <p id="no-data-message" style="display: none; text-align: center; color: #6c757d;">Tidak ada data pendapatan yang tersedia untuk grafik.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /.row -->
+</div>
+
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script>
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+    
+    function drawChart() {
+        const chartContainer = document.getElementById('revenueChart');
+        const noDataMessage = document.getElementById('no-data-message');
+        const chartDataElement = document.getElementById('chart-data');
+        
+        if (!chartDataElement) {
+            console.error('Chart data element not found');
+            chartContainer.style.display = 'none';
+            noDataMessage.style.display = 'block';
+            return;
+        }
+        
+        try {
+            // Parse chart data from Django context
+            const chartDataTable = JSON.parse(chartDataElement.textContent);
+            
+            // Debug: Log the parsed data to console
+            console.log('Chart Data Table:', chartDataTable);
+            
+            // Check if we have data beyond just the header (length 1)
+            if (!Array.isArray(chartDataTable) || chartDataTable.length < 2) {
+                console.warn('No revenue data available for chart');
+                chartContainer.style.display = 'none';
+                noDataMessage.style.display = 'block';
+                return;
+            }
+            
+            // Reset display if data is found
+            chartContainer.style.display = 'block';
+            noDataMessage.style.display = 'none';
+            
+            // Process the data to convert ISO date strings (from Python date object) 
+            // to JavaScript Date objects. We slice to skip the header row.
+            var processedDataRows = chartDataTable.slice(1).map(function(row) {
+                var dateStr = row[0]; // Format: "YYYY-MM-DD"
+                var dateObj = new Date(dateStr); // Konversi string ISO ke Date object
+                var revenueValue = parseFloat(row[1]) || 0; // Pastikan revenue adalah number
+                
+                return [dateObj, revenueValue];
+            });
+
+            // Buat DataTable baru dengan tipe kolom eksplisit
+            var data = new google.visualization.DataTable();
+            data.addColumn('date', chartDataTable[0][0]); // Kolom 0: Date
+            data.addColumn('number', chartDataTable[0][1]); // Kolom 1: Pendapatan (Rp)
+            
+            // Tambahkan data yang sudah diproses
+            data.addRows(processedDataRows);
+
+            // Set chart options
+            var options = {
+                title: 'Tren Pendapatan Bulanan',
+                curveType: 'function',
+                legend: { position: 'bottom' },
+                hAxis: {
+                    title: 'Bulan',
+                    format: 'MMM yyyy' // Format tampilan tanggal di sumbu X
+                },
+                vAxis: {
+                    title: 'Pendapatan (Rp)',
+                    format: 'decimal'
+                },
+                tooltip: {
+                    isHtml: true,
+                    trigger: 'focus'
+                }
+            };
+            
+            // Create and draw the chart
+            var chart = new google.visualization.LineChart(chartContainer);
+            chart.draw(data, options);
+
+        } catch (error) {
+            console.error('Error parsing or drawing chart data:', error);
+            chartContainer.style.display = 'none';
+            noDataMessage.textContent = 'Gagal memuat grafik: ' + error.message;
+            noDataMessage.style.display = 'block';
+        }
+    }
+    
+    // Redraw chart on window resize
+    window.addEventListener('resize', drawChart);
+</script>
+
+{% load static %}
+{{ chart_data_table|json_script:"chart-data" }}
+{% endblock %}

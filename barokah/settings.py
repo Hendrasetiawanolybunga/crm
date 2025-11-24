@@ -34,6 +34,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -107,7 +108,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'id-id'
 
 TIME_ZONE = 'Asia/Makassar'
 
@@ -115,11 +116,92 @@ USE_I18N = True
 
 USE_TZ = True
 
+# Jazzmin Settings
+JAZZMIN_SETTINGS = {
+    "site_title": "Barokah Admin",
+    "site_header": "Barokah Admin",
+    "site_brand": "UD. Barokah Jaya Beton",
+    "site_icon": "images/favicon.png",
+    "welcome_sign": "Selamat Datang di Dashboard Admin Barokah",
+    "copyright": "Barokah Beton",
+    "search_model": "core.Pelanggan",
+    "user_avatar": None,
+    "topmenu_links": [],
+    "usermenu_links": [
+        {"name": "Profile", "url": "admin:core_pelanggan_change", "icon": "fas fa-user-circle"},
+    ],
+    "show_sidebar": True,
+    "navigation_expanded": True,
+    "hide_apps": [],
+    "hide_models": ["auth.user", "auth.group"],
+    "order_with_respect_to": ["core", "core.Pelanggan", "core.Kategori", "core.Produk", "core.Transaksi", "core.DiskonPelanggan", "core.Notifikasi"],
+    "custom_links": {},
+    "icons": {
+        "core.Pelanggan": "fas fa-users",
+        "core.Produk": "fas fa-box-open",
+        "core.Transaksi": "fas fa-shopping-cart",
+        "core.DetailTransaksi": "fas fa-receipt",
+        "core.Kategori": "fas fa-tags",
+        "core.Notifikasi": "fas fa-bell",
+        "core.DiskonPelanggan": "fas fa-percent",
+    },
+    "default_icon_parents": "fas fa-chevron-circle-right",
+    "default_icon_children": "fas fa-circle",
+    "related_modal_active": False,
+    "custom_css": None,
+    "custom_js": None,
+    "show_ui_builder": False,
+    "changeform_format": "horizontal_tabs",
+    "changeform_format_overrides": {"core.Pelanggan": "collapsible", "core.Transaksi": "single"},
+    "theme": "united",
+    "dashboard_title": "Dashboard",
+    "sidebar": "sidebar-light-info",
+    "navbar": "navbar-white navbar-light",
+    "footer": "footer-dark",
+    "button_classes": {
+        "primary": "btn-primary",
+        "secondary": "btn-secondary",
+        "info": "btn-info",
+        "warning": "btn-warning",
+        "danger": "btn-danger",
+        "success": "btn-success"
+    }
+}
+
+JAZZMIN_UI_TWEAKS = {
+    "theme": "united",
+    "dark_mode_theme": None,
+    "sidebar": "sidebar-light-info",
+    "navbar": "navbar-white navbar-light",
+    "footer": "footer-dark",
+}
+
+# Custom template directory
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(BASE_DIR, 'core', 'templates')],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
